@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="es" class="h-full">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/> 
+    <title>NotFast</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class'
+        }
+    </script>
+    <style>
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.3);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 40px 0 rgba(31, 38, 135, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .dark .glassmorphism {
+            background: rgba(31, 41, 55, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 10px 40px 0 rgba(0, 0, 0, 0.3);
+        }
+
+        section {
+            display: none;
+        }
+
+        section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="h-full bg-white dark:bg-gray-900 text-black dark:text-white transition-colors duration-300">
+    <!-- Sidebar Menu -->
+    <div id="sidebar" class="fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 transform -translate-x-full transition-transform duration-300 z-50 glassmorphism">
+        <div class="p-4">
+            <button id="closeSidebar" class="text-black dark:text-white float-right text-2xl">&times;</button>
+            <h2 class="text-2xl font-bold mb-4 mt-8">Menú</h2>
+            <ul>
+                <li class="mb-4">
+                    <a href="#" data-section="home" class="menu-item flex items-center text-black dark:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" 
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                        </svg>
+                        Inicio
+                    </a>
+                </li>
+                <li class="mb-4">
+                    <a href="#" data-section="about" class="menu-item flex items-center text-black dark:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" 
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Acerca de
+                    </a>
+                </li>
+                <li>
+                    <a href="#" data-section="news" class="menu-item flex items-center text-black dark:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 mr-2" fill="none" 
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 00-2-2h-2m-4-3H9m2 0h4m-4 0a2 2 0 01-2-2V7a2 2 0 012-2h4a2 2 0 012 2v3m-6 0h6" />
+                        </svg>
+                        Noticias
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Main Content Sections -->
+    <section id="home" class="home active">
+        <!-- Header -->
+        <header class="sticky top-0 z-40 flex justify-between items-center p-4 bg-white dark:bg-gray-800 shadow-md">
+            <!-- Contenedor para Menú y Botón de Retroceso -->
+            <div class="flex items-center">
+                <!-- Botón del Menú Hamburguesa -->
+                <button id="openSidebar" class="text-black dark:text-white mr-4">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" 
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M4 6h16M4 12h16M4 18h16"/>
+                    </svg>
+                </button>
+
+                <!-- Botón de Retroceso (estilo cuadrado + icono, oculto inicialmente) -->
+                <button id="backButton" class="text-black dark:text-white hidden w-10 h-10 bg-gray-100 dark:bg-gray-700 rounded flex items-center justify-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 transform rotate-180" fill="none" 
+                         viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                              d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex items-center">
+                <h1 class="text-2xl font-bold text-black dark:text-white">NotFast</h1>
+                <span class="ml-1 w-3 h-3 bg-green-500 rounded-full inline-block"></span>
+            </div>
+            
+            <!-- Dark Mode Toggle -->
+            <div class="flex items-center">
+                <label class="flex items-center cursor-pointer">
+                    <div class="relative">
+                        <input type="checkbox" id="darkModeToggle" class="sr-only" />
+                        <div class="w-10 h-4 bg-gray-400 rounded-full shadow-inner"></div>
+                        <div class="dot absolute -left-1 -top-1 bg-white w-6 h-6 rounded-full transition shadow-md" id="darkModeToggle-dot"></div>
+                    </div>
+                    <span class="ml-3 text-gray-700 dark:text-white">
+                        <svg id="sunIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-500" fill="none" 
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M12 3v1m0 16v1m9-9h-1M4 12H3m3.343-5.657L5.929 5.929m12.728 12.728L18.071 18.07M12 7a5 5 0 110 10 5 5 0 010-10z" />
+                        </svg>
+                        <svg id="moonIcon" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-700 hidden" fill="none" 
+                             viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                  d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+                        </svg>
+                    </span>
+                </label>
+            </div>
+        </header>
+
+        <!-- Advertisement Banner -->
+        <div class="p-3 flex justify-center">
+            <a href="https://t.me/Hamster_kombat_bot/start?startapp=kentId6794189417">
+                <img src="https://i.ibb.co/KbcwVQd/Not-Fast-20241213-225347-0000.png" alt="Advertisement" 
+                     class="max-w-full h-auto rounded-2xl shadow-lg hover:scale-105 transition-transform duration-300">
+            </a>
+        </div>
+
+        <!-- Crear Perfil Button -->
+        <div class="flex justify-center my-4">
+            <a href="#crear-perfil" id="crearPerfilBtn" class="bg-purple-500 text-white px-6 py-2 rounded-md hover:bg-blue-600">
+                Crear Perfil
+            </a>
+        </div>
+
+        <!-- Top 10 Noticias (Populares) -->
+        <div class="p-4">
+            <h2 class="text-2xl font-bold mb-4 text-center">Populares</h2>
+            <div class="overflow-x-auto flex space-x-4" id="topNewsContainer"></div>
+        </div>
+
+        <!-- Noticias Recientes -->
+        <div class="p-4">
+            <h2 class="text-2xl font-bold mb-4 text-center">Noticias Recientes</h2>
+            <div class="flex justify-center mb-4">
+                <a href="#news" class="text-blue-500 hover:underline">+ Más Noticias</a>
+            </div>
+            <div id="recentNewsContainer" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Noticias dinámicas recientes -->
+            </div>
+        </div>
+
+        <!-- Topics Section -->
+        <div id="topics-section" class="p-4">
+            <h2 class="text-2xl font-bold mb-4 text-center">Temas Populares</h2>
+            <div id="topicsContainer" class="flex flex-wrap justify-center gap-4">
+                <span class="px-4 py-2 bg-blue-100 dark:bg-blue-800 text-blue-800 dark:text-blue-200 rounded-full cursor-pointer">Tecnología</span>
+                <span class="px-4 py-2 bg-green-100 dark:bg-green-800 text-green-800 dark:text-green-200 rounded-full cursor-pointer">Política</span>
+                <span class="px-4 py-2 bg-red-100 dark:bg-red-800 text-red-800 dark:text-red-200 rounded-full cursor-pointer">Deportes</span>
+                <span class="px-4 py-2 bg-purple-100 dark:bg-purple-800 text-purple-800 dark:text-purple-200 rounded-full cursor-pointer">Entretenimiento</span>
+            </div>
+        </div>
+
+        <!-- Topics News Section -->
+        <div id="topics-news" class="hidden p-4">
+            <!-- Contenido dinámico cargado según el tema -->
+        </div>
+
+        <!-- Profile Creation Section -->
+        <section id="crear-perfil" class="hidden p-6">
+            <div class="max-w-md mx-auto bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 glassmorphism">
+                <h2 class="text-2xl font-bold mb-4 text-black dark:text-white">Crear Perfil</h2>
+                
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-white mb-2">Foto de Perfil</label>
+                    <div class="flex items-center space-x-4">
+                        <img id="profilePicture" src="https://api.dicebear.com/7.x/avataaars/svg?seed=default" alt="Foto de perfil" 
+                             class="w-24 h-24 rounded-full object-cover">
+                        <div>
+                            <button id="uploadPhotoBtn" class="bg-gray-200 dark:bg-gray-700 text-black dark:text-white px-4 py-2 rounded-md mr-2">
+                                Subir Foto
+                            </button>
+                            <button id="generatePFP" class="bg-blue-500 text-white px-4 py-2 rounded-md">
+                                Generar Avatar
+                            </button>
+                        </div>
+                    </div>
+                    <input type="file" id="photoUpload" class="hidden" accept="image/*">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-white mb-2">Nombre</label>
+                    <input type="text" id="usernameInput" placeholder="Tu nombre" 
+                        class="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white">
+                </div>
+
+                <div class="mb-4">
+                    <label class="block text-gray-700 dark:text-white mb-2">Correo Electrónico</label>
+                    <input type="email" id="emailInput" placeholder="tu@email.com" 
+                        class="w-full p-2 border rounded-md dark:bg-gray-700 dark:text-white">
+                </div>
+
+                <button id="saveProfile" class="w-full bg-green-500 text-white p-2 rounded-md hover:bg-green-600">
+                    Guardar Perfil
+                </button>
+            </div>
+        </section>
+    </section>
+
+    <section id="about" class="about glassmorphism p-6">
+        <div class="max-w-2xl mx-auto">
+            <h2 class="text-3xl font-bold mb-4">Acerca de NotFast</h2>
+            <p class="mb-4">NotFast es una plataforma de noticias moderna que te mantiene informado con las últimas novedades y tendencias.</p>
+            <div class="grid md:grid-cols-2 gap-4">
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Nuestra Misión</h3>
+                    <p>Proporcionar noticias rápidas, precisas y relevantes para nuestros lectores.</p>
+                </div>
+                <div>
+                    <h3 class="text-xl font-semibold mb-2">Nuestro Equipo</h3>
+                    <p>Compuesto por periodistas apasionados y tecnólogos innovadores.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="news" class="news">
+        <div id="newsContainer" class="p-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <!-- Noticias dinámicas -->
+        </div>
+
+        <div class="flex justify-center mt-4">
+            <button id="loadMoreBtn" class="bg-blue-500 text-white px-6 py-2 rounded hover:bg-blue-600">
+                Cargar Más Noticias
+            </button>
+        </div>
+    </section>
+
+    <script>
+        let currentPage = 1;
+        const API_TOKEN = 'ZvFwU5PGcnB8GA99p99cAEm3gj5HmPlD0Nt0OVRM';
+
+        // Sidebar
+        const sidebar = document.getElementById('sidebar');
+        const openSidebarBtn = document.getElementById('openSidebar');
+        const closeSidebarBtn = document.getElementById('closeSidebar');
+        openSidebarBtn.addEventListener('click', () => {
+            sidebar.classList.remove('-translate-x-full');
+        });
+        closeSidebarBtn.addEventListener('click', () => {
+            sidebar.classList.add('-translate-x-full');
+        });
+
+        // Dark Mode
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        const darkModeToggleDot = document.getElementById('darkModeToggle-dot');
+        const sunIcon = document.getElementById('sunIcon');
+        const moonIcon = document.getElementById('moonIcon');
+        const htmlElement = document.documentElement;
+
+        if (localStorage.getItem('darkMode') === 'enabled') {
+            htmlElement.classList.add('dark');
+            darkModeToggleDot.classList.add('translate-x-full');
+            sunIcon.classList.add('hidden');
+            moonIcon.classList.remove('hidden');
+        }
+
+        darkModeToggle.addEventListener('change', () => {
+            htmlElement.classList.toggle('dark');
+            darkModeToggleDot.classList.toggle('translate-x-full');
+            sunIcon.classList.toggle('hidden');
+            moonIcon.classList.toggle('hidden');
+
+            if (htmlElement.classList.contains('dark')) {
+                localStorage.setItem('darkMode', 'enabled');
+            } else {
+                localStorage.removeItem('darkMode');
+            }
+        });
+
+        // Perfil
+        const crearPerfilBtn = document.getElementById('crearPerfilBtn');
+        const crearPerfilSection = document.getElementById('crear-perfil');
+        const profilePicture = document.getElementById('profilePicture');
+        const generatePFP = document.getElementById('generatePFP');
+        const uploadPhotoBtn = document.getElementById('uploadPhotoBtn');
+        const photoUpload = document.getElementById('photoUpload');
+        const usernameInput = document.getElementById('usernameInput');
+        const emailInput = document.getElementById('emailInput');
+        const saveProfile = document.getElementById('saveProfile');
+
+        crearPerfilBtn.addEventListener('click', () => {
+            crearPerfilSection.classList.remove('hidden');
+        });
+
+        generatePFP.addEventListener('click', () => {
+            profilePicture.src = `https://api.dicebear.com/7.x/avataaars/svg?seed=${Math.random()}`;
+        });
+
+        uploadPhotoBtn.addEventListener('click', () => {
+            photoUpload.click();
+        });
+
+        photoUpload.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    profilePicture.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+
+        saveProfile.addEventListener('click', () => {
+            const profile = {
+                username: usernameInput.value,
+                email: emailInput.value,
+                profilePicture: profilePicture.src
+            };
+            
+            if (!profile.username || !profile.email) {
+                alert('Por favor, completa todos los campos');
+                return;
+            }
+
+            localStorage.setItem('userProfile', JSON.stringify(profile));
+            crearPerfilSection.classList.add('hidden');
+        });
+
+        const savedProfile = JSON.parse(localStorage.getItem('userProfile'));
+        if (savedProfile) {
+            usernameInput.value = savedProfile.username;
+            emailInput.value = savedProfile.email;
+            profilePicture.src = savedProfile.profilePicture;
+        }
+
+        // Crear Tarjeta Noticia
+        function createNewsCard(article) {
+            const card = document.createElement('div');
+            card.className = 'bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-shadow';
+            card.innerHTML = `
+                <img src="${article.image}" alt="${article.title}" class="w-full h-48 object-cover">
+                <div class="p-4">
+                    <h2 class="text-lg font-bold text-black dark:text-white mb-2">${article.title}</h2>
+                    <p class="text-gray-600 dark:text-gray-300">${article.description}</p>
+                </div>
+            `;
+            card.addEventListener('click', () => openNewsModal(article));
+            return card;
+        }
+
+        // Modal Noticia
+        function openNewsModal(article) {
+            const modal = document.createElement('div');
+            modal.className = 'fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center';
+            modal.innerHTML = `
+                <div class="bg-white dark:bg-gray-800 w-11/12 md:w-3/4 max-h-screen overflow-y-auto rounded-lg p-6">
+                    <img src="${article.image}" alt="${article.title}" class="w-full h-96 object-cover rounded-lg mb-4">
+                    <h2 class="text-2xl font-bold text-black dark:text-white mb-2">${article.title}</h2>
+                    <p class="text-gray-700 dark:text-gray-300 mb-4">${article.description}</p>
+                    <a href="${article.url}" target="_blank" class="text-blue-500 hover:underline mb-4 block">Leer Artículo Completo</a>
+                    <button id="shareButton" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">Compartir</button>
+                    
+                    <div class="comments-section">
+                        <h3 class="text-xl font-semibold text-black dark:text-white mb-2">Comentarios</h3>
+                        <div id="commentsList" class="mb-4"></div>
+                        <div class="flex">
+                            <input type="text" id="newCommentInput" placeholder="Escribe un comentario..." 
+                                class="flex-grow p-2 border rounded-l dark:bg-gray-700 dark:text-white">
+                            <button id="postCommentBtn" class="bg-blue-500 text-white px-4 py-2 rounded-r">Publicar</button>
+                        </div>
+                    </div>
+                    <button id="closeModal" class="mt-4 bg-red-500 text-white px-4 py-2 rounded">Cerrar</button>
+                </div>
+            `;
+
+            document.body.appendChild(modal);
+
+            const commentsList = modal.querySelector('#commentsList');
+            const newCommentInput = modal.querySelector('#newCommentInput');
+            const postCommentBtn = modal.querySelector('#postCommentBtn');
+            const closeModal = modal.querySelector('#closeModal');
+            const shareButton = modal.querySelector('#shareButton');
+
+            const comments = JSON.parse(localStorage.getItem(`comments_${article.url}`) || '[]');
+            comments.forEach(comment => {
+                const commentElement = document.createElement('div');
+                commentElement.className = 'bg-gray-100 dark:bg-gray-700 p-2 rounded mb-2';
+                commentElement.innerHTML = `
+                    <strong class="text-black dark:text-white">${comment.username}</strong>
+                    <p class="text-gray-700 dark:text-gray-300">${comment.text}</p>
+                `;
+                commentsList.appendChild(commentElement);
+            });
+
+            postCommentBtn.addEventListener('click', () => {
+                const commentText = newCommentInput.value.trim();
+                if (commentText) {
+                    const newComment = {
+                        username: savedProfile ? savedProfile.username : 'Anónimo',
+                        text: commentText
+                    };
+                    comments.push(newComment);
+                    localStorage.setItem(`comments_${article.url}`, JSON.stringify(comments));
+
+                    const commentElement = document.createElement('div');
+                    commentElement.className = 'bg-gray-100 dark:bg-gray-700 p-2 rounded mb-2';
+                    commentElement.innerHTML = `
+                        <strong class="text-black dark:text-white">${newComment.username}</strong>
+                        <p class="text-gray-700 dark:text-gray-300">${newComment.text}</p>
+                    `;
+                    commentsList.appendChild(commentElement);
+                    newCommentInput.value = '';
+                }
+            });
+
+            shareButton.addEventListener('click', async () => {
+                if (navigator.share) {
+                    try {
+                        await navigator.share({
+                            title: article.title,
+                            text: article.description,
+                            url: article.url
+                        });
+                    } catch (error) {
+                        console.error('Error al compartir:', error);
+                    }
+                } else {
+                    alert('La función de compartir no está soportada en este navegador.');
+                }
+            });
+
+            closeModal.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+        }
+
+        // Cargar Noticias
+        async function fetchNews() {
+            try {
+                const response = await fetch(`https://api.thenewsapi.com/v1/news/top?api_token=${API_TOKEN}&locale=mx&limit=3&page=${currentPage}`);
+                const data = await response.json();
+                
+                const newsContainer = document.getElementById('newsContainer');
+                data.data.forEach(article => {
+                    const newsCard = createNewsCard({
+                        title: article.title,
+                        description: article.description,
+                        image: article.image_url,
+                        url: article.url
+                    });
+                    newsContainer.appendChild(newsCard);
+                });
+                
+                currentPage++;
+            } catch (error) {
+                console.error('Error al cargar noticias:', error);
+                alert('No se pudieron cargar las noticias. Intenta más tarde.');
+            }
+        }
+
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        loadMoreBtn.addEventListener('click', fetchNews);
+        fetchNews();
+
+        // Navegación entre secciones
+        const menuItems = document.querySelectorAll('.menu-item');
+        const sections = document.querySelectorAll('section');
+        const homeSection = document.getElementById('home');
+        const backButton = document.getElementById('backButton');
+
+        menuItems.forEach(item => {
+            item.addEventListener('click', (e) => {
+                const targetSection = e.currentTarget.getAttribute('data-section');
+                
+                sections.forEach(section => {
+                    section.classList.remove('active');
+                });
+                
+                document.getElementById(targetSection).classList.add('active');
+
+                // Mostrar el botón de retroceso solo en about y news
+                if (targetSection === 'about' || targetSection === 'news') {
+                    backButton.classList.remove('hidden');
+                } else {
+                    backButton.classList.add('hidden');
+                }
+
+                sidebar.classList.add('-translate-x-full');
+            });
+        });
+
+        backButton.addEventListener('click', () => {
+            sections.forEach(section => {
+                section.classList.remove('active');
+            });
+            homeSection.classList.add('active');
+            backButton.classList.add('hidden');
+        });
+
+        // Topics
+        const topicsContainer = document.getElementById('topicsContainer');
+        const topicsNewsSection = document.getElementById('topics-news');
+
+        async function loadTopicNews(topic) {
+            topicsNewsSection.classList.remove('hidden');
+            try {
+                const response = await fetch(`https://api.thenewsapi.com/v1/news/top?api_token=${API_TOKEN}&locale=mx&limit=3&search=${encodeURIComponent(topic)}`);
+                const data = await response.json();
+                
+                topicsNewsSection.innerHTML = `
+                    <h2 class="text-2xl font-bold mb-4 text-center">Noticias de ${topic.charAt(0).toUpperCase() + topic.slice(1)}</h2>
+                    <div id="topicNewsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        ${data.data.map(article => `
+                            <div class="bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-shadow">
+                                <img src="${article.image_url}" alt="${article.title}" class="w-full h-48 object-cover">
+                                <div class="p-4">
+                                    <h2 class="text-lg font-bold text-black dark:text-white mb-2">${article.title}</h2>
+                                    <p class="text-gray-600 dark:text-gray-300">${article.description}</p>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error al cargar noticias por tema:', error);
+            }
+        }
+
+        topicsContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'SPAN') {
+                const topic = e.target.textContent.toLowerCase();
+                loadTopicNews(topic);
+            }
+        });
+
+        // Cargar por defecto el tema "Tecnología" al iniciar
+        document.addEventListener('DOMContentLoaded', () => {
+            loadTopicNews('tecnología');
+            fetchTopTenNews();
+            fetchRecentNews();
+        });
+
+        // Función para Top 10 Noticias
+        async function fetchTopTenNews() {
+            try {
+                const response = await fetch(`https://api.thenewsapi.com/v1/news/top?api_token=${API_TOKEN}&locale=mx&limit=10&page=1`);
+                const data = await response.json();
+                const topNewsContainer = document.getElementById('topNewsContainer');
+                data.data.forEach(article => {
+                    const card = document.createElement('div');
+                    card.className = 'min-w-[200px] bg-white dark:bg-gray-800 rounded-lg shadow-md overflow-hidden cursor-pointer hover:shadow-xl transition-shadow';
+                    card.innerHTML = `
+                        <img src="${article.image_url}" alt="${article.title}" class="w-full h-32 object-cover">
+                        <div class="p-4">
+                            <h2 class="text-md font-bold text-black dark:text-white mb-1">${article.title}</h2>
+                        </div>
+                    `;
+                    card.addEventListener('click', () => openNewsModal({
+                        title: article.title,
+                        description: article.description,
+                        image: article.image_url,
+                        url: article.url
+                    }));
+                    topNewsContainer.appendChild(card);
+                });
+            } catch (error) {
+                console.error('Error al cargar top 10 noticias:', error);
+            }
+        }
+
+        // Función para Noticias Recientes
+        async function fetchRecentNews() {
+            try {
+                const response = await fetch(`https://api.thenewsapi.com/v1/news/top?api_token=${API_TOKEN}&locale=mx&limit=3&page=1`);
+                const data = await response.json();
+                
+                const recentNewsContainer = document.getElementById('recentNewsContainer');
+                data.data.forEach(article => {
+                    const newsCard = createNewsCard({
+                        title: article.title,
+                        description: article.description,
+                        image: article.image_url,
+                        url: article.url
+                    });
+                    recentNewsContainer.appendChild(newsCard);
+                });
+            } catch (error) {
+                console.error('Error al cargar noticias recientes:', error);
+            }
+        }
+    </script>
+</body>
+</html>
