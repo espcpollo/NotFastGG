@@ -1,0 +1,434 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <meta name="color-scheme" content="dark" />
+
+    <!-- Fuente -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@3.3.2/dist/tailwind.min.css" rel="stylesheet">
+
+    <!-- FontAwesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" integrity="sha512-Fo3rlrZj/k7ujTnH1+2jpxl9Nbm9s7HnzqTXKIDWozQhY65f7a2l6S5t/nM0gwweAvG4HdmQznTmZ0QHLQd0Fg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    <title>Noticias MX</title>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .glass {
+            backdrop-filter: blur(12px);
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,255,255,0.15);
+        }
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
+        }
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            -webkit-line-clamp: 2;
+        }
+    </style>
+</head>
+<body class="dark:bg-gray-900 dark:text-white min-h-screen flex flex-col relative overflow-x-hidden">
+    <!-- Header -->
+    <header class="fixed w-full z-20 top-0 left-0 glass p-4 flex items-center justify-between">
+        <div class="flex items-center space-x-4">
+            <!-- Botón menú hamburguesa -->
+            <button id="menuToggle" class="text-white text-2xl focus:outline-none hover:text-gray-300">
+                <i class="fas fa-bars"></i>
+            </button>
+            <!-- Logo -->
+            <a href="#" class="flex items-center space-x-2">
+                <img src="https://i.ibb.co/x7Qh7T3/black-background-white-notfast-logo-with-lk-MXbgs0-Qre3ugdkwj-P8k-A-UVVFm3-K3-Rn-CMq-Jopd-Lgc-Vg-rem.png"
+                     alt="Logo"
+                     class="h-14 w-auto object-contain"/>
+                <span class="text-xl font-semibold">Noticias MX</span>
+            </a>
+        </div>
+        <!-- Barra de búsqueda (no funcional) -->
+        <div class="hidden md:flex items-center space-x-2 glass px-4 py-2 rounded-xl">
+            <input type="text" placeholder="Buscar..."
+                   class="bg-transparent focus:outline-none text-white placeholder-gray-300 w-48"/>
+            <i class="fas fa-search"></i>
+        </div>
+        <!-- Login/Logout -->
+        <div class="flex items-center space-x-4">
+            <button id="loginButton" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">Login</button>
+            <button id="logoutButton" class="px-4 py-2 bg-red-600 hover:bg-red-700 rounded-md hidden transition-colors">Logout</button>
+        </div>
+    </header>
+
+    <!-- Menú lateral -->
+    <aside id="sidebarMenu" class="fixed top-0 left-0 h-full w-64 bg-gray-800 text-white transform -translate-x-full transition-transform duration-300 z-50 no-scrollbar overflow-y-auto">
+        <div class="p-4 text-xl font-semibold border-b border-gray-700">Categorías</div>
+        <nav class="flex flex-col p-4 space-y-2">
+            <a href="#" class="hover:bg-gray-700 px-4 py-2 rounded-md">Noticias Nacionales</a>
+            <a href="#" class="hover:bg-gray-700 px-4 py-2 rounded-md">Tecnología</a>
+            <a href="#" class="hover:bg-gray-700 px-4 py-2 rounded-md">Anime</a>
+            <a href="#" class="hover:bg-gray-700 px-4 py-2 rounded-md">Mundo</a>
+            <a href="#" class="hover:bg-gray-700 px-4 py-2 rounded-md">Deportes</a>
+            <a href="#" class="hover:bg-gray-700 px-4 py-2 rounded-md">Entretenimiento</a>
+        </nav>
+    </aside>
+
+    <!-- Contenedor principal -->
+    <main class="flex-1 pt-20 pb-10 px-4 md:px-8">
+        <!-- Sección principal (lista de noticias) -->
+        <section id="mainSection" class="space-y-12 transition-opacity">
+            <!-- Noticias Destacadas -->
+            <div>
+                <h2 class="text-3xl font-bold mb-4">Noticias Destacadas</h2>
+                <div id="featuredNews" class="grid md:grid-cols-3 gap-6"></div>
+            </div>
+
+            <!-- Otras Noticias (API + LocalStorage) -->
+            <div>
+                <h2 class="text-2xl font-semibold mb-4">Más Noticias</h2>
+                <div id="otherNews" class="grid md:grid-cols-3 lg:grid-cols-4 gap-6"></div>
+            </div>
+
+            <!-- Paginación -->
+            <div class="flex justify-center mt-8">
+                <button id="loadMoreBtn" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 rounded-md transition-colors">
+                    Cargar más
+                </button>
+            </div>
+        </section>
+
+        <!-- Vista detallada de una noticia -->
+        <section id="detailSection" class="hidden space-y-4 transition-opacity">
+            <button id="backButton" class="mb-4 px-4 py-2 bg-gray-700 hover:bg-gray-800 rounded-md transition-colors">
+                <i class="fas fa-arrow-left"></i> Regresar
+            </button>
+            <div class="space-y-4">
+                <h1 id="detailTitle" class="text-3xl font-bold"></h1>
+                <div class="flex items-center space-x-4 text-sm text-gray-300">
+                    <span id="detailAuthor"></span>
+                    <span id="detailDate"></span>
+                </div>
+                <img id="detailImage" src="" alt="Imagen Noticia" class="w-full h-auto rounded-md">
+                <p id="detailDescription" class="mt-4 text-lg text-gray-100"></p>
+
+                <!-- Caja de comentarios -->
+                <div class="mt-8 glass p-4 rounded-xl">
+                    <h2 class="text-xl font-semibold mb-4">Comentarios</h2>
+                    <div id="commentsList" class="space-y-2 mb-4"></div>
+                    <div class="flex flex-col space-y-2">
+                        <textarea id="commentInput" class="w-full bg-gray-800 p-2 rounded-md text-white focus:outline-none" rows="3" placeholder="Escribe tu comentario..."></textarea>
+                        <button id="sendCommentBtn" class="self-end bg-green-600 hover:bg-green-700 px-4 py-2 rounded-md transition-colors">Enviar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formulario de Login -->
+        <section id="loginSection" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center hidden">
+            <div class="glass p-8 rounded-xl max-w-md w-full">
+                <h2 class="text-2xl font-semibold mb-4">Iniciar Sesión</h2>
+                <div class="mb-4">
+                    <label class="block mb-1">Usuario</label>
+                    <input type="text" id="loginUser" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" placeholder="admin">
+                </div>
+                <div class="mb-4">
+                    <label class="block mb-1">Contraseña</label>
+                    <input type="password" id="loginPass" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" placeholder="1234">
+                </div>
+                <div class="flex space-x-4">
+                    <button id="loginSubmit" class="px-4 py-2 bg-blue-600 hover:bg-blue-700 rounded-md transition-colors">Login</button>
+                    <button id="loginCancel" class="px-4 py-2 bg-gray-600 hover:bg-gray-700 rounded-md transition-colors">Cancelar</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Formulario para crear noticias (visible solo si logueado) -->
+        <section id="createNewsSection" class="hidden mt-8 glass p-8 rounded-xl">
+            <h2 class="text-2xl font-semibold mb-4">Crear Nueva Noticia</h2>
+            <div class="grid gap-4 md:grid-cols-2">
+                <div>
+                    <label class="block mb-1">Título</label>
+                    <input type="text" id="newsTitle" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" placeholder="Título de la noticia">
+                </div>
+                <div>
+                    <label class="block mb-1">Imagen (URL)</label>
+                    <input type="text" id="newsImage" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" placeholder="URL de la imagen">
+                </div>
+                <div class="md:col-span-2">
+                    <label class="block mb-1">Descripción</label>
+                    <textarea id="newsDescription" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" rows="3" placeholder="Descripción de la noticia"></textarea>
+                </div>
+                <div>
+                    <label class="block mb-1">Fecha</label>
+                    <input type="text" id="newsDate" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" placeholder="YYYY-MM-DD">
+                </div>
+                <div>
+                    <label class="block mb-1">Autor</label>
+                    <input type="text" id="newsAuthor" class="w-full bg-gray-800 p-2 rounded-md focus:outline-none" placeholder="Autor de la noticia">
+                </div>
+            </div>
+            <button id="createNewsBtn" class="mt-4 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-md transition-colors">Crear Noticia</button>
+        </section>
+    </main>
+
+    <script>
+        // Variables globales
+        let currentPage = 1;
+        const API_TOKEN = 'ZvFwU5PGcnB8GA99p99cAEm3gj5HmPlD0Nt0OVRM';
+        let newsData = [];
+        let featuredLoaded = false;
+        let isLoggedIn = false;
+        let currentDetailNews = null; // noticia actualmente en detalle
+
+        // Elementos del DOM
+        const sidebarMenu = document.getElementById('sidebarMenu');
+        const menuToggle = document.getElementById('menuToggle');
+        const mainSection = document.getElementById('mainSection');
+        const detailSection = document.getElementById('detailSection');
+        const backButton = document.getElementById('backButton');
+        const featuredNewsContainer = document.getElementById('featuredNews');
+        const otherNewsContainer = document.getElementById('otherNews');
+        const loadMoreBtn = document.getElementById('loadMoreBtn');
+        const detailTitle = document.getElementById('detailTitle');
+        const detailImage = document.getElementById('detailImage');
+        const detailDescription = document.getElementById('detailDescription');
+        const detailAuthor = document.getElementById('detailAuthor');
+        const detailDate = document.getElementById('detailDate');
+        const loginButton = document.getElementById('loginButton');
+        const logoutButton = document.getElementById('logoutButton');
+        const loginSection = document.getElementById('loginSection');
+        const loginSubmit = document.getElementById('loginSubmit');
+        const loginCancel = document.getElementById('loginCancel');
+        const loginUser = document.getElementById('loginUser');
+        const loginPass = document.getElementById('loginPass');
+        const createNewsSection = document.getElementById('createNewsSection');
+        const createNewsBtn = document.getElementById('createNewsBtn');
+        const newsTitle = document.getElementById('newsTitle');
+        const newsImage = document.getElementById('newsImage');
+        const newsDescription = document.getElementById('newsDescription');
+        const newsDate = document.getElementById('newsDate');
+        const newsAuthor = document.getElementById('newsAuthor');
+
+        const commentsList = document.getElementById('commentsList');
+        const commentInput = document.getElementById('commentInput');
+        const sendCommentBtn = document.getElementById('sendCommentBtn');
+
+        // Menú lateral toggle
+        menuToggle.addEventListener('click', () => {
+            if (sidebarMenu.classList.contains('-translate-x-full')) {
+                sidebarMenu.classList.remove('-translate-x-full');
+            } else {
+                sidebarMenu.classList.add('-translate-x-full');
+            }
+        });
+
+        // Función para cargar noticias desde la API
+        async function loadNews() {
+            const apiUrl = `https://api.thenewsapi.com/v1/news/top?api_token=${API_TOKEN}&locale=mx&limit=3&page=${currentPage}`;
+            const resp = await fetch(apiUrl);
+            const data = await resp.json();
+            const articles = data.data || [];
+
+            // Guardar las noticias obtenidas
+            newsData = newsData.concat(articles);
+
+            // Mostrar las noticias
+            renderNews();
+            currentPage += 1;
+        }
+
+        // Renderizar noticias
+        function renderNews() {
+            // Featured News: mostrar las 3 primeras una sola vez
+            if (!featuredLoaded && newsData.length >= 3) {
+                const top3 = newsData.slice(0,3);
+                top3.forEach(article => {
+                    const card = createNewsCard(article, true);
+                    featuredNewsContainer.appendChild(card);
+                });
+                featuredLoaded = true;
+            }
+
+            // Otras noticias: A partir de la cuarta noticia de la API más las locales
+            const others = featuredLoaded ? newsData.slice(3) : newsData;
+            otherNewsContainer.innerHTML = '';
+            // Añadir noticias del API
+            others.forEach(article => {
+                const card = createNewsCard(article, false);
+                otherNewsContainer.appendChild(card);
+            });
+
+            // Añadir noticias creadas manualmente desde LocalStorage
+            const customNews = getCustomNews();
+            customNews.forEach(article => {
+                const card = createNewsCard(article, false, true);
+                otherNewsContainer.appendChild(card);
+            });
+        }
+
+        // Crear tarjeta de noticia
+        function createNewsCard(article, isFeatured = false, isCustom = false) {
+            const card = document.createElement('div');
+            card.className = `cursor-pointer glass p-4 rounded-xl hover:scale-[1.02] transition-transform duration-300 flex flex-col`;
+
+            card.addEventListener('click', () => showDetail(article, isCustom));
+
+            const imageUrl = article.image_url || article.image || 'https://via.placeholder.com/600x400?text=Sin+Imagen';
+            const title = article.title || 'Sin título';
+            const description = article.description || '';
+            const date = article.published_at || article.date || '';
+            const author = article.source || article.author || 'Desconocido';
+
+            card.innerHTML = `
+                <img src="${imageUrl}" class="w-full h-40 object-cover rounded-md mb-2" alt="Noticia">
+                <h3 class="text-xl font-semibold mb-2 line-clamp-2">${title}</h3>
+                ${isFeatured ? `<p class="text-sm text-gray-300 line-clamp-2">${description}</p>` : ''}
+                <div class="mt-auto flex items-center justify-between text-sm text-gray-300 pt-2 border-t border-gray-700">
+                    <span>${author}</span>
+                    <span>${date}</span>
+                </div>
+            `;
+            return card;
+        }
+
+        // Mostrar detalle de una noticia
+        function showDetail(article, isCustom = false) {
+            currentDetailNews = { article, isCustom };
+            mainSection.classList.add('hidden');
+            detailSection.classList.remove('hidden');
+
+            const imageUrl = article.image_url || article.image || 'https://via.placeholder.com/600x400?text=Sin+Imagen';
+            detailTitle.textContent = article.title || 'Sin título';
+            detailDescription.textContent = article.description || '';
+            detailImage.src = imageUrl;
+            detailAuthor.textContent = `Autor: ${article.author || article.source || 'Desconocido'}`;
+            detailDate.textContent = `Fecha: ${article.published_at || article.date || ''}`;
+
+            // Cargar comentarios
+            loadComments();
+        }
+
+        // Regresar a la página principal
+        backButton.addEventListener('click', () => {
+            detailSection.classList.add('hidden');
+            mainSection.classList.remove('hidden');
+        });
+
+        // Cargar más noticias
+        loadMoreBtn.addEventListener('click', loadNews);
+
+        // Login
+        loginButton.addEventListener('click', () => {
+            loginSection.classList.remove('hidden');
+        });
+        loginCancel.addEventListener('click', () => {
+            loginSection.classList.add('hidden');
+        });
+        loginSubmit.addEventListener('click', () => {
+            const user = loginUser.value.trim();
+            const pass = loginPass.value.trim();
+            if (user === 'admin' && pass === '1234') {
+                isLoggedIn = true;
+                loginSection.classList.add('hidden');
+                loginButton.classList.add('hidden');
+                logoutButton.classList.remove('hidden');
+                createNewsSection.classList.remove('hidden');
+            } else {
+                alert('Usuario o contraseña incorrectos');
+            }
+        });
+
+        // Logout
+        logoutButton.addEventListener('click', () => {
+            isLoggedIn = false;
+            loginButton.classList.remove('hidden');
+            logoutButton.classList.add('hidden');
+            createNewsSection.classList.add('hidden');
+        });
+
+        // Crear noticia manualmente
+        createNewsBtn.addEventListener('click', () => {
+            const newNews = {
+                title: newsTitle.value,
+                image: newsImage.value,
+                description: newsDescription.value,
+                date: newsDate.value,
+                author: newsAuthor.value
+            };
+
+            if (!newNews.title || !newNews.image || !newNews.description || !newNews.date || !newNews.author) {
+                alert('Todos los campos son obligatorios');
+                return;
+            }
+
+            const customNews = getCustomNews();
+            customNews.push(newNews);
+            localStorage.setItem('customNews', JSON.stringify(customNews));
+
+            // Limpiar campos
+            newsTitle.value = '';
+            newsImage.value = '';
+            newsDescription.value = '';
+            newsDate.value = '';
+            newsAuthor.value = '';
+
+            // Actualizar vista
+            renderNews();
+        });
+
+        function getCustomNews() {
+            const stored = localStorage.getItem('customNews');
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        // Comentarios
+        sendCommentBtn.addEventListener('click', () => {
+            const commentText = commentInput.value.trim();
+            if (!commentText) return;
+
+            const newsId = getNewsId(currentDetailNews.article, currentDetailNews.isCustom);
+            let comments = getComments(newsId);
+            comments.push(commentText);
+            localStorage.setItem('comments-' + newsId, JSON.stringify(comments));
+
+            commentInput.value = '';
+            loadComments();
+        });
+
+        function loadComments() {
+            commentsList.innerHTML = '';
+            const newsId = getNewsId(currentDetailNews.article, currentDetailNews.isCustom);
+            const comments = getComments(newsId);
+            comments.forEach(c => {
+                const div = document.createElement('div');
+                div.className = 'bg-gray-800 p-2 rounded-md';
+                div.textContent = c;
+                commentsList.appendChild(div);
+            });
+        }
+
+        function getComments(newsId) {
+            const stored = localStorage.getItem('comments-' + newsId);
+            return stored ? JSON.parse(stored) : [];
+        }
+
+        function getNewsId(article, isCustom) {
+            let base = isCustom ? 'custom' : 'api';
+            let title = article.title || '';
+            return base + '-' + encodeURIComponent(title.toLowerCase().replace(/\s+/g, '-'));
+        }
+
+        // Inicializar
+        loadNews();
+    </script>
+</body>
+</html>
